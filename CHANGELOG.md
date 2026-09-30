@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.12.0] - 2026-09-30
+
+### Fixed
+
+- **The Calendar filter stopped matching any invites after a Gmail update.** Gmail replaced the
+  calendar-event row icon, previously an `<img src=".../mail/images/calendar...">`, with an inline
+  Material SVG. The detector only knew the image form, so every invite was classified as ordinary
+  mail and the Calendar view came up empty, with no error. The same update turned the paperclip
+  icon into an SVG as well; attachment filtering kept working only because Gmail still sets the
+  `byw` row class, while the `img.aSK` and `data-tooltip` checks matched nothing.
+
+  Every icon check now accepts both forms: the calendar and paperclip icons are also matched by
+  their locale-independent SVG path, and the localized "Calendar event", `.ics` and "Has
+  attachment" labels are read from `alt` on SVGs as well as images. The calendar icon's
+  `title="Has attachment"` is deliberately ignored, so invites are not counted as attachments.
+
+### Changed
+
+- **The toolbar is centred by default.** Start alignment remains available in the options page.
+- **The extension name uses a colon instead of an em dash** ("Sift: A Filter Toolbar for Gmail")
+  in every locale.
+- **The icon's filter glyph is red instead of yellow**, and the marketing screenshots are
+  regenerated to match.
+
 ## [2.11.0] - 2026-07-31
 
 ### Fixed
