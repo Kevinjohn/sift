@@ -13,15 +13,15 @@ import {
  * @stable
  */
 export function isCalendarRow(row, chromeApi = globalThis.chrome) {
-  const hasIcs = Array.from(row.querySelectorAll('img[alt]')).some((image) =>
-    /\.ics(?![\p{L}\p{N}_.-])/iu.test(image.getAttribute('alt') || ''),
+  const hasIcs = Array.from(row.querySelectorAll('[alt]')).some((icon) =>
+    /\.ics(?![\p{L}\p{N}_.-])/iu.test(icon.getAttribute('alt') || ''),
   );
   const hasCalendarEventIcon = !!row.querySelector(SELECTORS.calendarIcon);
   const calendarEventAltText = chromeApi?.i18n?.getMessage?.('alt_calendar_event');
   const hasLocalizedCalendarAlt =
     !!calendarEventAltText &&
-    Array.from(row.querySelectorAll('img[alt]')).some(
-      (image) => image.getAttribute('alt') === calendarEventAltText,
+    Array.from(row.querySelectorAll('[alt]')).some(
+      (icon) => icon.getAttribute('alt') === calendarEventAltText,
     );
   return hasIcs || hasCalendarEventIcon || hasLocalizedCalendarAlt;
 }
@@ -50,11 +50,17 @@ export function isGoogleDocAttachment(row) {
  * translation of the given message key. Shared by the favourite/attachment detectors so the
  * escape-and-query logic lives in one place.
  */
-function matchesLocalizedTooltip(row, messageKey, chromeApi, selectorPrefix = '') {
+function matchesLocalizedTooltip(
+  row,
+  messageKey,
+  chromeApi,
+  selectorPrefix = '',
+  attribute = 'data-tooltip',
+) {
   const localizedText = chromeApi?.i18n?.getMessage?.(messageKey);
   if (!localizedText) return false;
   const escapedText = localizedText.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-  return !!row.querySelector(`${selectorPrefix}[data-tooltip="${escapedText}"]`);
+  return !!row.querySelector(`${selectorPrefix}[${attribute}="${escapedText}"]`);
 }
 
 export function hasAttachmentRow(row, chromeApi = globalThis.chrome) {
@@ -69,6 +75,9 @@ export function hasAttachmentRow(row, chromeApi = globalThis.chrome) {
     hasBywClass ||
     hasAttachmentTooltip ||
     matchesLocalizedTooltip(row, 'alt_has_attachment', chromeApi) ||
+    // WHY: The SVG paperclip carries its label as `alt`; `title` is avoided because Gmail also
+    // sets title="Has attachment" on the calendar-event icon.
+    matchesLocalizedTooltip(row, 'alt_has_attachment', chromeApi, 'svg', 'alt') ||
     hasPaperclipIcon ||
     isGoogleDocAttachment(row)
   );

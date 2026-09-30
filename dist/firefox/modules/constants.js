@@ -216,9 +216,11 @@ export const SELECTORS = {
   attachmentChip: 'div.brc',
   /**
    * Selector for the attachment icon within an email row.
-   * Targets the `img` element that indicates an email has an attachment.
+   * Targets the paperclip icon that indicates an email has an attachment.
+   * WHY: Gmail replaced the `img.aSK` paperclip with an inline Material "attach_file" `<svg>`. The
+   * path prefix is locale-independent; the img form is kept for older Gmail.
    */
-  attachmentIcon: 'img.aSK',
+  attachmentIcon: 'img.aSK, svg path[d^="M18 16.5H7.5c-2.21 0-4-1.79-4-4"]',
   /**
    * CSS class applied to email rows that have attachments.
    * This class is used by Gmail to style rows with attachments.
@@ -229,7 +231,12 @@ export const SELECTORS = {
    * Targets elements with a `data-tooltip` attribute set to "Has attachment".
    */
   attachmentTooltip: '[data-tooltip="Has attachment"]',
-  calendarIcon: 'img[src*="/mail/images/calendar"]',
+  /**
+   * Selector for the calendar-event icon in an email row.
+   * WHY: Gmail replaced the `<img src=".../mail/images/calendar...">` icon with an inline Material
+   * "event" `<svg>`. The path prefix is locale-independent; the img form is kept for older Gmail.
+   */
+  calendarIcon: 'img[src*="/mail/images/calendar"], svg path[d^="M19 3h-1V1h-2v2H8V1H6v2H5"]',
   starredIcon: '.T-KT-Jp, [aria-checked="true"].T-KT',
   /**
    * Selector for the custom filter bar injected by the extension.

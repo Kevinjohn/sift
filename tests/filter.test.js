@@ -111,6 +111,20 @@ describe('isCalendarRow', () => {
     expect(isCalendarRow(row)).toBe(true);
   });
 
+  test('detects the inline SVG calendar icon regardless of locale', () => {
+    const { row } = prepareDocument();
+    row.innerHTML =
+      '<svg viewBox="0 0 24 24" alt="Kalendertermin"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14"></path></svg>';
+    expect(isCalendarRow(row)).toBe(true);
+  });
+
+  test('falls back to the localized calendar alt text on an SVG icon', () => {
+    const { row } = prepareDocument();
+    row.innerHTML =
+      '<svg viewBox="0 0 24 24" alt="Calendar event"><path d="M0 0h24v24H0z"></path></svg>';
+    expect(isCalendarRow(row)).toBe(true);
+  });
+
   test('does not match unrelated calendar-like image names', () => {
     const { row } = prepareDocument();
     const icon = row.ownerDocument.createElement('img');
@@ -617,6 +631,35 @@ describe('hasAttachmentRow localized tooltip', () => {
     expect(hasAttachmentRow(row, chromeApi)).toBe(true);
     // Without the localized message the same row is not detected
     expect(hasAttachmentRow(row, { i18n: { getMessage: () => '' } })).toBe(false);
+  });
+});
+
+describe('hasAttachmentRow SVG paperclip', () => {
+  test('detects the inline SVG paperclip regardless of locale', () => {
+    const { row } = prepareDocument();
+    row.innerHTML =
+      '<svg viewBox="0 0 24 24" alt="Mit Anhang"><path d="M18 16.5H7.5c-2.21 0-4-1.79-4-4s1.79-4 4-4"></path></svg>';
+    expect(hasAttachmentRow(row, { i18n: { getMessage: () => '' } })).toBe(true);
+  });
+
+  test('detects an SVG paperclip via the extension-locale alt text', () => {
+    const { row } = prepareDocument();
+    row.innerHTML =
+      '<svg viewBox="0 0 24 24" alt="Mit Anhang"><path d="M0 0h24v24H0z"></path></svg>';
+    const chromeApi = {
+      i18n: { getMessage: (key) => (key === 'alt_has_attachment' ? 'Mit Anhang' : '') },
+    };
+    expect(hasAttachmentRow(row, chromeApi)).toBe(true);
+  });
+
+  test('does not treat the calendar icon title as an attachment', () => {
+    const { row } = prepareDocument();
+    row.innerHTML =
+      '<svg viewBox="0 0 24 24" alt="Calendar event" title="Has attachment"><path d="M19 3h-1V1h-2v2H8V1H6v2H5"></path></svg>';
+    const chromeApi = {
+      i18n: { getMessage: (key) => (key === 'alt_has_attachment' ? 'Has attachment' : '') },
+    };
+    expect(hasAttachmentRow(row, chromeApi)).toBe(false);
   });
 });
 
