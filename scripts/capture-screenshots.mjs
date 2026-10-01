@@ -88,8 +88,8 @@ const SHOTS = [
   },
 
   // --- localisation showcase ----------------------------------------------------------
-  // The toolbar is fully localised; the surrounding Gmail replica stays in English (see the
-  // caveat in docs/website-brief.md §11). Arabic additionally mirrors the whole layout.
+  // The toolbar is fully localised; the surrounding Gmail replica stays in English.
+  // Arabic additionally mirrors the whole layout.
   { name: 'locale-en-toolbar', mode: 'ALL', rows: 26, locale: 'en' },
   { name: 'locale-ar-toolbar', mode: 'ALL', rows: 26, locale: 'ar', uiLanguage: 'ar', rtl: true },
   { name: 'locale-zh-cn-toolbar', mode: 'ALL', rows: 26, locale: 'zh_CN', uiLanguage: 'zh-CN' },
